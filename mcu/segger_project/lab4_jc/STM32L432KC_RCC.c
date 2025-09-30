@@ -3,19 +3,50 @@
 
 #include "STM32L432KC_RCC.h"
 
-void configureMSI(void) {
-//RCC->CR |= (1 << 0) is the same as RCC->CR = RCC->CR | mask; // OR with mask to set bit 1, do AND with ~mask to set to 0
-    RCC->CR &= ~(1 << 0); // turn MSI off 
-    RCC->CR |= (1 << 0); // turn MSI on
+void configurePLL() {
+    // Set clock to 80 MHz
+    // Output freq = (src_clk) * (N/M) / R
+    // (4 MHz) * (80/1) / 4 = 80 MHz
+    // M: 1, N: 80, R: 4
+    // Use MSI as PLLSRC
 
-    while ((RCC->CR >> 1 & 1) != 1); // leave loop only if MSIREADY (bit 1) is HIGH 
+    // Turn off PLL
+    RCC->CR &= ~(1 << 24);
+    
+    // Wait till PLL is unlocked (e.g., off)
+    while ((RCC->CR >> 25 & 1) != 0);
+
+    // Load configuration
+    // Set PLL SRC to MSI
+    RCC->PLLCFGR |= (1 << 0);
+    RCC->PLLCFGR &= ~(1 << 1);
+
+    // Set PLLN
+    RCC->PLLCFGR &= ~(0b11111111 << 8); // Clear all bits of PLLN
+    RCC->PLLCFGR |= (0b1010000 << 8); // |= 80
+    
+    // Set PLLM
+    RCC->PLLCFGR &= ~(0b111 << 4);  // Clear all bits
+    
+    // Set PLLR
+    RCC->PLLCFGR &= ~(1 << 26);
+    RCC->PLLCFGR |= (1 << 25);
+    
+    // Enable PLLR output
+    RCC->PLLCFGR |= (1 << 24);
+
+    // Enable PLL
+    RCC->CR |= (1 << 24);
+    
+    // Wait until PLL is locked
+    while ((RCC->CR >> 25 & 1) != 1);
 }
 
-void configureClock(void){
-    // Configure and turn on MSI
-    configureMSI();
-  
-    // set MSI as clock source (RCC_CFGR)
-    RCC->CFGR &= ~(0b00 << 0); // set SW to 00 for MSI
-    while((RCC->CFGR & (0b11 << 2)) != (0b00 << 2));  // verify that SW is set to 00 for MSI
+void configureClock(){
+    // Configure and turn on PLL
+    configurePLL();
+
+    // Select PLL as clock source
+    RCC->CFGR |= (0b11 << 0);
+    while(!((RCC->CFGR >> 2) & 0b11));
 }

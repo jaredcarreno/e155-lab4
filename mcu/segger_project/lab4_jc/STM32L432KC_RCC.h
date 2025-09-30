@@ -15,9 +15,15 @@
 // Base addresses
 #define RCC_BASE (0x40021000UL) // base address of RCC
 
+// PLL
+#define PLLSRC_HSI 0
+#define PLLSRC_HSE 1
+
+// Clock configuration
 #define SW_HSI  0
 #define SW_HSE  1
 #define SW_PLL  2
+
 /**
   * @brief Reset and Clock Control
   */
@@ -71,7 +77,7 @@ typedef struct
 // Function prototypes
 ///////////////////////////////////////////////////////////////////////////////
 
-void configureMSI(void);
+void configurePLL(void);
 void configureClock(void);
 
 #endif
