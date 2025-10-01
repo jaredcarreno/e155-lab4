@@ -5,7 +5,6 @@
 #include "STM32L432KC_GPIO.h"
 #include "STM32L432KC_FLASH.h"
 #include "STM32L432KC_TIM.h"
-#include "stm32l432xx.h"
 
 // Pitch in Hz, duration in ms
 const int notes[][2] = {
@@ -120,16 +119,57 @@ const int notes[][2] = {
 {  0,	0}};
 
 int main(void) {
+/////////////////////////////////
 // Enable Clocks
+/////////////////////////////////
+configureFlash();
+configureClock();
 
+
+////////////////////////////////
 // GPIO Peripheral Clocks/Timers
+////////////////////////////////
 RCC->AHB2ENR |= (1 << 0); // Enables peripheral clock for GPIOA
-RCC->APB2ENR |= (0b11 << 16); // Enables TIM15 and 16
+RCC->APB2ENR |= (1 << 16); // Enables TIM15 and 16
+RCC->APB2ENR |= (1 << 17); // Enables TIM15 and 16
 
+////////////////////
 // GPIO Pin Modes
+///////////////////
 GPIOA->MODER &= ~(0b11 << 12); // reset GPIO mode bits for PA6
 GPIOA->MODER |= (1 << 13); // enable alt function for PA6
 
-GPIOA->AFRL |= (0b1110 << 24); // enable alternate function for timer 16
+GPIOA->AFRL |= (0b1110 << 24); // enable alternate function for PA6, using timer 16
 
+///////////////////////////////////////
+// looping through columns and duration
+///////////////////////////////////////
+int size = sizeof(notes)/sizeof(notes[0]);
+int freq;
+int duration;
+
+initTIM(TIM15);
+initPWM(TIM16);
+
+for(int i = 0; i < size; i++) {
+  playFreq(TIM16, notes[i][0]);
+  delay_millis(TIM15, notes[i][1]);
+  }
 }
+
+
+
+
+//example looping code:
+
+//int main() {
+//    int column1[] = {10, 20, 30, 40, 50};
+//    char column2[] = {'A', 'B', 'C', 'D', 'E'};
+//    int size = sizeof(column1) / sizeof(column1[0]); // Assuming both arrays have the same size
+
+//    for (int i = 0; i < size; i++) {
+//        printf("Row %d: Column 1 value = %d, Column 2 value = %c\n", i, column1[i], column2[i]);
+//    }
+
+//    return 0;
+//}

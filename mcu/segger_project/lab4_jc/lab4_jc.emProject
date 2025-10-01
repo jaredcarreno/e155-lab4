@@ -69,7 +69,6 @@
         <file file_name="STM32L432KC_TIM.c" />
         <file file_name="STM32L432KC_TIM.h" />
       </folder>
-      <file file_name="lab4starter_jc.c" />
       <file file_name="main.c" />
     </folder>
     <folder Name="System Files">

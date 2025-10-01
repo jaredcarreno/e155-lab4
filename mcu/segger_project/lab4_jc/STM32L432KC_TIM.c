@@ -47,7 +47,7 @@ void initPWM(TIM_TypeDef * TIMx) {
 }
 
 void playFreq(TIM_TypeDef * TIMx, uint32_t freq) {
-  uint16_t ARR_calculated2 = ((1/freq)*1000)*ticks_per_ms;
+  uint16_t ARR_calculated2 = ((ticks_per_ms/freq)*1000);
 
   if (freq == 0) {
     TIMx->CR1 &= ~(1 << 0); // Disable timer

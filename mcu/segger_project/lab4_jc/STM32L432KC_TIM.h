@@ -12,7 +12,7 @@
 
 #define __IO volatile
 
-#define ticks_per_ms 10000;
+#define ticks_per_ms (0x00002710UL)
 
 
 // BASE ADDRESSES
@@ -65,4 +65,6 @@ void initTIM(TIM_TypeDef * TIMx);
 void delay_millis(TIM_TypeDef * TIMx, uint32_t ms);
 
 void initPWM(TIM_TypeDef * TIMx);
+
+void playFreq(TIM_TypeDef * TIMx, uint32_t freq);
 #endif
