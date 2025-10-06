@@ -116,7 +116,22 @@ const int notes[][2] = {
 {523,	125},
 {494,	125},
 {440,	500},
-{  0,	0}};
+{  0,	100},
+{329, 500}, // E
+{293, 500}, // D
+{261, 500}, // C
+{293, 500}, // D
+{329, 500}, // E
+{329, 500}, // E
+{329, 1000},// E
+{293, 500}, // D
+{293, 500}, // D
+{293, 1000},// D
+{329, 500}, // E
+{392, 500}, // G
+{392, 1000},// G
+{0, 1000}
+};
 
 int main(void) {
 /////////////////////////////////
@@ -136,24 +151,29 @@ RCC->APB2ENR |= (1 << 17); // Enables TIM15 and 16
 ////////////////////
 // GPIO Pin Modes
 ///////////////////
-GPIOA->MODER &= ~(0b11 << 12); // reset GPIO mode bits for PA6
-GPIOA->MODER |= (1 << 13); // enable alt function for PA6
+pinMode(6, GPIO_ALT);
 
+GPIOA->AFRL &= ~(0b1111 << 24); // enable alternate function for PA6, using timer 16
 GPIOA->AFRL |= (0b1110 << 24); // enable alternate function for PA6, using timer 16
 
 ///////////////////////////////////////
 // looping through columns and duration
 ///////////////////////////////////////
 int size = sizeof(notes)/sizeof(notes[0]);
-int freq;
-int duration;
 
 initTIM(TIM15);
 initPWM(TIM16);
 
+
+//while(1){
+//  playFreq(TIM16, 300);
+//}
+
 for(int i = 0; i < size; i++) {
-  playFreq(TIM16, notes[i][0]);
-  delay_millis(TIM15, notes[i][1]);
+  int pitch = notes[i][0];
+  int duration = notes[i][1];
+  playFreq(TIM16, pitch);
+  delay_millis(TIM15, duration);
   }
 }
 

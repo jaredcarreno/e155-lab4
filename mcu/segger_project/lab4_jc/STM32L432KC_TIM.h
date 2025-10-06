@@ -12,7 +12,8 @@
 
 #define __IO volatile
 
-#define ticks_per_ms (0x00002710UL)
+#define ticks_per_ms 10
+#define ticks_per_ms_freq 10000
 
 
 // BASE ADDRESSES
